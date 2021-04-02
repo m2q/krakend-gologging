@@ -1,3 +1,7 @@
+# This version of krakend-gologging is Windows-friendly
+
+I removed syslog dependency and removed the UNIX-shell color escape codes.
+
 # krakend-gologging
 
 An improved logger for the KrakenD framework
