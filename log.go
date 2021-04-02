@@ -4,7 +4,6 @@ package gologging
 import (
 	"fmt"
 	"io"
-	"log/syslog"
 	"os"
 
 	"github.com/devopsfaith/krakend/config"
@@ -19,8 +18,8 @@ var (
 	// ErrEmptyValue is the error returned when there is no config under the namespace
 	ErrWrongConfig = fmt.Errorf("getting the extra config for the krakend-gologging module")
 	// DefaultPattern is the pattern to use for rendering the logs
-	LogstashPattern          = `{"@timestamp":"%{time:200-01-02T15:04:05.000+00:00}", "@version": 1, "level": "%{level}", "message": "%{message}", "module": "%{module}"}`
-	DefaultPattern           = ` %{time:2006/01/02 - 15:04:05.000} %{color}▶ %{level:.6s}%{color:reset} %{message}`
+	LogstashPattern          = `{"@timestamp":"%{time:2006-01-02T15:04:05Z0700}", "@version": 1, "level": "%{level}", "message": "%{message}", "module": "%{module}"}`
+	DefaultPattern           = `  %{time:2006-01-02T15:04:05Z0700}    %{level:.6s}    %{message}`
 	ActivePattern            = DefaultPattern
 	defaultFormatterSelector = func(io.Writer) string { return ActivePattern }
 )
@@ -41,16 +40,6 @@ func NewLogger(cfg config.ExtraConfig, ws ...io.Writer) (logging.Logger, error) 
 
 	if logConfig.StdOut {
 		ws = append(ws, os.Stdout)
-	}
-
-	if logConfig.Syslog {
-		var err error
-		var w *syslog.Writer
-		w, err = syslog.New(syslog.LOG_CRIT, logConfig.Prefix)
-		if err != nil {
-			return nil, err
-		}
-		ws = append(ws, w)
 	}
 
 	if logConfig.Format == "logstash" {
